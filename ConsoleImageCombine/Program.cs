@@ -6,6 +6,10 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Drawing;
 using System.IO;
+using System.Runtime.Serialization;
+using System.Runtime.Serialization.Json;
+using System.Drawing.Imaging;
+using System.Reflection;
 
 namespace ConsoleImageCombine
 {
@@ -14,8 +18,8 @@ namespace ConsoleImageCombine
         [STAThread]
         static void Main(string[] args)
         {
-            var i = 0;
-            start: Console.Write($"{Options.Join(x => $"{i++}: {x.Item1}\n","")} Selection: ");
+        start: var i = 0;
+            Console.Write($"{Options.Join(x => $"{i++}: {x.Item1}\n","")} Selection: ");
             var c = Console.ReadKey();
             Console.WriteLine();
             Process(c.KeyChar);
@@ -25,7 +29,11 @@ namespace ConsoleImageCombine
         {
             for (int i = 0; i < Options.Count; i++)
                 if (i.ToString() == pressed.ToString())
+                {
+                    Console.WriteLine("Doing " + Options[i].Item1);
                     Options[i].Item2();
+                    Console.WriteLine("Done");
+                }
         }
 
         public static List<(string, Action)> Options = new List<(string, Action)>
@@ -245,8 +253,55 @@ namespace ConsoleImageCombine
                 d.Dispose();
                 image.Dispose();
                 d2.Dispose();
-            })
+            })/*,
+            ("split creature data",(Action)(() => { // wip image data reading
+                var d = new OpenFileDialog();
+                d.Filter = "Images|*.png";
+                if (d.ShowDialog() != DialogResult.OK)
+                {
+                    d.Dispose();
+                    return;
+                }
+                var image = new Bitmap(d.FileName, false);
+                var data = new PropertyList();
+                foreach (var p in image.PropertyItems)
+                    data.metadata.Add(new PropertyList.Property()
+                    {
+                        Type = p.Type,
+                        Id = p.Id,
+                        Data = p.Value
+                    });
+                foreach (var p in image.GetEncoderParameterList().Param)
+                {
+                    var len = p.ValueType == EncoderParameterValueType.ValueTypeByte;
+                    new Encoder();
+                }
+                var d2 = new SaveFileDialog();
+                d2.Filter = "JSON|*.json";
+                if (d2.ShowDialog() == DialogResult.OK)
+                    using (var file = File.OpenWrite(d2.FileName))
+                        new DataContractJsonSerializer(typeof(PropertyList)).WriteObject(file, data);
+                d.Dispose();
+                image.Dispose();
+                d2.Dispose();
+            }))*/
         };
+    }
+
+    public class PropertyList
+    {
+        public List<Property> metadata = new List<Property>();
+        public class Property
+        {
+            public int Id;
+            public short Type;
+            public byte[] Data;
+        }
+        public class Parameter
+        {
+            public EncoderParameterValueType Type;
+            public byte[] Data;
+        }
     }
 
     public static class ExtentionMethods
@@ -264,6 +319,8 @@ namespace ConsoleImageCombine
             }
             return default;
         }
+        static FieldInfo _parameterValue = typeof(EncoderParameter).GetField("parameterValue", ~BindingFlags.Default);
+        public static IntPtr GetValueHandle(this EncoderParameter parameter) => (IntPtr)_parameterValue.GetValue(parameter);
         public static byte Grayscale(this Color color) => (byte)((color.R + color.G + color.B) / 3);
         public static string Join<T>(this IEnumerable<T> c, Func<T, string> func = null, string delimeter = ", ")
         {
