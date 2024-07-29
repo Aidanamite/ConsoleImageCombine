@@ -47,10 +47,12 @@ namespace ConsoleImageCombine
                     return;
                 }
                 var image = new Bitmap(d.FileName, false);
-                image.MakeTransparent();
+                image.MakeTransparent(Color.FromArgb(0,0,0,0));
                 for (int x = 0; x < image.Width; x++)
-                    for (int y = 0; y < image.Height; y++)
-                        image.SetPixel(x, y, Color.FromArgb(image.GetPixel(x, y).R, 255, 255, 255));
+                    for (int y = 0; y < image.Height; y++) {
+                        var o = image.GetPixel(x, y);
+                        image.SetPixel(x, y, Color.FromArgb(Math.Max(Math.Max(o.R,o.G),o.B), 255, 255, 255));
+                    }
                 var d2 = new SaveFileDialog();
                 d2.Filter = d.Filter;
                 if (d2.ShowDialog() == DialogResult.OK)
@@ -164,7 +166,7 @@ namespace ConsoleImageCombine
                     return;
                 }
                 var image = new Bitmap(d.FileName, false);
-                image.MakeTransparent();
+                image.MakeTransparent(Color.FromArgb(0,0,0,0));
                 for (int x = 0; x < image.Width; x++)
                     for (int y = 0; y < image.Height; y++)
                     {
@@ -189,7 +191,7 @@ namespace ConsoleImageCombine
                     return;
                 }
                 var image = new Bitmap(d.FileName, false);
-                image.MakeTransparent();
+                image.MakeTransparent(Color.FromArgb(0,0,0,0));
                 for (int x = 0; x < image.Width; x++)
                     for (int y = 0; y < image.Height; y++)
                     {
@@ -215,7 +217,7 @@ namespace ConsoleImageCombine
                     return;
                 }
                 var image = new Bitmap(d.FileName, false);
-                image.MakeTransparent();
+                image.MakeTransparent(Color.FromArgb(0,0,0,0));
                 for (int x = 0; x < image.Width; x++)
                     for (int y = 0; y < image.Height; y++)
                     {
@@ -239,7 +241,7 @@ namespace ConsoleImageCombine
                     return;
                 }
                 var image = new Bitmap(d.FileName, false);
-                image.MakeTransparent();
+                image.MakeTransparent(Color.FromArgb(0,0,0,0));
                 for (int x = 0; x < image.Width; x++)
                     for (int y = 0; y < image.Height; y++)
                     {
