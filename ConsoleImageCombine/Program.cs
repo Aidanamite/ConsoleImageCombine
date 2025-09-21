@@ -15,7 +15,7 @@ namespace ConsoleImageCombine
 {
     class Program
     {
-        public const string VERSION = "1.1.0";
+        public const string VERSION = "1.1.1";
         static bool cmdMode = false;
         static Queue<string> arg;
         [STAThread]
@@ -99,7 +99,7 @@ namespace ConsoleImageCombine
                 var p = arg.Dequeue().Trim('"');
                 var valid = Path.GetInvalidPathChars();
                 foreach (var c in p)
-                    if (Array.IndexOf(valid, c) == -1)
+                    if (Array.IndexOf(valid, c) != -1)
                         return false;
                 Selected = p;
                 return true;
